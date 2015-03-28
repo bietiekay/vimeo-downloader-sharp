@@ -3,9 +3,24 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.ServiceModel.Syndication;
+using System.Xml;
+using System.IO;
 
 namespace VimeoDownloadLibrary
 {
+	public class VimeoVideoChannel
+	{
+		public String VideoID;
+		public String VideoName;
+
+		public VimeoVideoChannel(String ID, String Name)
+		{
+			VideoID = ID;
+			VideoName = Name;
+		}
+	}
+
 	public class VideoDownloadURL
 	{
 		public String VideoURL;
@@ -20,10 +35,26 @@ namespace VimeoDownloadLibrary
 
 	public static class VimeoDownloadLibrary
 	{
-
-		public static List<String> ParseVimeoChannel(String ChannelURL)
+		/// <summary>
+		/// Parses the vimeo channel RSS URL and returns a list of DownloadURLs on that page
+		/// </summary>
+		/// <returns>The vimeo videos download information contained in this channel.</returns>
+		/// <param name="ChannelURL">Channel UR.</param>
+		public static List<VimeoVideoChannel> ParseVimeoChannel(String ChannelURL)
 		{
-			return null;
+			// create the empty output list...
+			List<VimeoVideoChannel> Output = new List<VimeoVideoChannel> ();
+
+			XmlReader reader = XmlReader.Create(ChannelURL);
+			SyndicationFeed feed = SyndicationFeed.Load(reader);
+			reader.Close();
+			foreach (SyndicationItem item in feed.Items)
+			{
+				if (item.Links.Count >= 0) {
+					Output.Add(new VimeoVideoChannel(item.Links[0].Uri.AbsolutePath.Remove(0,1),item.Title.Text));
+				}
+			}
+			return Output;
 		}
 
 		/// <summary>
