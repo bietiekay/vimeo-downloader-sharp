@@ -75,7 +75,7 @@ namespace VimeoDownloadLibrary
 		public int preload_video { get; set; }
 		public int plays { get; set; }
 		public int webp { get; set; }
-		public int conviva { get; set; }
+		public bool conviva { get; set; }
 		public int login { get; set; }
 		public int partials { get; set; }
 		public int blurr { get; set; }
